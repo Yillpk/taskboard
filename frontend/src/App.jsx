@@ -5,6 +5,7 @@ const API = import.meta.env.VITE_API_URL;
 export default function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
+  const [formError, setFormError] = useState ("");
 
   const load = async () => {
     const res = await fetch(`${API}/api/tasks`);
@@ -13,13 +14,21 @@ export default function App() {
 
   useEffect(() => { load(); }, []);
 
+  //agrega una tarea nueva y la manda al backend
   const addTask = async (e) => {
     e.preventDefault();
+    //si el campo esta vacio muestra el error y no envia nada
+    if (!title.trim()) {
+      setFormError("Escribe el titulo antes de agregar la tarea")
+      return;
+    }
+    
     await fetch(`${API}/api/tasks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title })
     });
+
     setTitle("");
     load();
   };
@@ -30,12 +39,12 @@ export default function App() {
     load();
   };
 
-  //recibe la ttarea completada, se necesita saber 
-  // si esta hecha o aun no, !si done esta flase manda a su contrario
+  //recibe la trarea completada, se necesita saber 
+  // si esta hecha o aun no, !si done esta false manda a su contrario
   const toggleTask = async (task) => {
     await fetch (`${API}/api/tasks/${task.id}`,{
       method: "PATCH",
-      headers: {"Content-Type": "aplication/json" },
+      headers: {"Content-Type": "application/json" },
       body: JSON.stringify({ done: !task.done })
     });
     load();  
@@ -46,10 +55,15 @@ export default function App() {
     <main>
       <h1>TaskBoard</h1>
       <form onSubmit={addTask}>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} />
-        <button>Agregar</button>
+        <input
+          value={title}
+          onChange={(e) => { setTitle(e.target.value); setFormError(""); }}
+          placeholder="Escribe una nueva tarea..."
+        />
+        <button>Agregar</button>  
       </form>
-      <ul>
+       {formError && <p style={{ color: "red"}}>{formError}</p>}
+       <ul>
         {tasks.map((t) => (
           <li key={t.id}>
             <input type="checkbox" checked={t.done} onChange={() => toggleTask(t)} />
