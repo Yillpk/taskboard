@@ -60,31 +60,34 @@ export default function App() {
   };
   
 
-  return (
-    <main>
-      <h1>TaskBoard</h1>
-      <form onSubmit={addTask}>
+    return (
+    <main className="app">
+      <h1 className="title">TaskBoard</h1>
+      <p className="subtitle">Organiza tu día, una tarea a la vez.</p>
+
+      <form onSubmit={addTask} className="task-form">
         <input
+          className={formError ? "input input-error" : "input"}
           value={title}
           onChange={(e) => { setTitle(e.target.value); setFormError(""); }}
           placeholder="Escribe una nueva tarea..."
         />
-        <button>Agregar</button>  
+        <button className="btn">Agregar</button>
       </form>
-       {formError && <p style={{ color: "red"}}>{formError}</p>}
-       {loading && <p>Cargando tareas... el servidor puede tardar un minuto. </p>}
-       {error && <p style={{color: "red"}}>{error}</p>}
-       <ul>
+
+      {formError && <p className="msg msg-error">{formError}</p>}
+      {loading && <p className="msg">Cargando tareas... el servidor puede tardar un minuto.</p>}
+      {error && <p className="msg msg-error">{error}</p>}
+
+      <ul className="task-list">
         {tasks.map((t) => (
-          <li key={t.id}>
+          <li key={t.id} className={t.done ? "task done" : "task"}>
             <input type="checkbox" checked={t.done} onChange={() => toggleTask(t)} />
-            {t.title}
-            <button onClick={() => deleteTask(t.id)}>Eliminar</button>
+            <span className="task-title">{t.title}</span>
+            <button className="btn-delete" onClick={() => deleteTask(t.id)}>Eliminar</button>
           </li>
         ))}
       </ul>
-
-      
     </main>
   );
 }
