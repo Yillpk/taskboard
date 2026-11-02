@@ -24,6 +24,12 @@ export default function App() {
     load();
   };
 
+  //Borra una tarea usando su id, y con load se actualiza
+  const deleteTask = async (id) => {
+    await fetch(`${API}/api/tasks/${id}`, {method: "DELETE" });
+    load();
+  };
+
   return (
     <main>
       <h1>TaskBoard</h1>
@@ -31,7 +37,16 @@ export default function App() {
         <input value={title} onChange={(e) => setTitle(e.target.value)} />
         <button>Agregar</button>
       </form>
-      <ul>{tasks.map((t) => <li key={t.id}>{t.title}</li>)}</ul>
+      <ul>
+        {tasks.map((t) => (
+          <li key={t.id}>
+            {t.title}
+            <button onClick={() => deleteTask(t.id)}>Eliminar</button>
+          </li>
+        ))}
+      </ul>
+
+      
     </main>
   );
 }
