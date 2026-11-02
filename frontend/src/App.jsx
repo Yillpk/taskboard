@@ -30,6 +30,18 @@ export default function App() {
     load();
   };
 
+  //recibe la ttarea completada, se necesita saber 
+  // si esta hecha o aun no, !si done esta flase manda a su contrario
+  const toggleTask = async (task) => {
+    await fetch (`${API}/api/tasks/${task.id}`,{
+      method: "PATCH",
+      headers: {"Content-Type": "aplication/json" },
+      body: JSON.stringify({ done: !task.done })
+    });
+    load();  
+  };
+  
+
   return (
     <main>
       <h1>TaskBoard</h1>
@@ -40,6 +52,7 @@ export default function App() {
       <ul>
         {tasks.map((t) => (
           <li key={t.id}>
+            <input type="checkbox" checked={t.done} onChange={() => toggleTask(t)} />
             {t.title}
             <button onClick={() => deleteTask(t.id)}>Eliminar</button>
           </li>
