@@ -6,10 +6,19 @@ export default function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
   const [formError, setFormError] = useState ("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+   // trae las tareas del backend, si falla muestra un mensaje de error
   const load = async () => {
-    const res = await fetch(`${API}/api/tasks`);
-    setTasks(await res.json());
+    setError("");
+    try {
+     const res = await fetch(`${API}/api/tasks`);
+     setTasks (await res.json());
+    } catch{
+            setError("No se pudo conectar con el servidor, por favor intenta nuevamente");
+    }
+    setLoading(false);
   };
 
   useEffect(() => { load(); }, []);
@@ -63,6 +72,8 @@ export default function App() {
         <button>Agregar</button>  
       </form>
        {formError && <p style={{ color: "red"}}>{formError}</p>}
+       {loading && <p>Cargando tareas... el servidor puede tardar un minuto. </p>}
+       {error && <p style={{color: "red"}}>{error}</p>}
        <ul>
         {tasks.map((t) => (
           <li key={t.id}>
