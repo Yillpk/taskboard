@@ -27,7 +27,21 @@ app.post("/api/tasks", async (req, res) => {
   res.status(201).json(rows[0]);
 });
 
-// TODO: implementar PATCH /api/tasks/:id y DELETE /api/tasks/:id
+//cambia una tarea entre completada o pendiente 
+app.patch("/api/tasks/:id", async (req, res) =>{
+  const {done } = req.body;
+  const { rows } = await pool.query(
+    "UPDATE tasks SET done = $1 WHERE id = $2 RETURNING *", [done, req.params.id]);
+  if (rows.length === 0) return res.status(404).json({ error: "Tarea no encontrada"});
+  res.json(rows[0]);
+});
+
+//Elimina una tarea
+app.delete("/api/tasks/:id", async (req, res) =>{
+  const { rowCount } = await pool.query("DELETE FROM tasks WHERE id = $1", [req.params.id]);
+  if (rowCount === 0) return res.status(404).json({ error: "Tarea no encontrada" });
+  res.status(204).send();
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API escuchando en el puerto ${PORT}`));
